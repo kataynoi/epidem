@@ -1,7 +1,20 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: spiderman
- * Date: 5/7/2556
- * Time: 12:26 น.
- * To change this template use File | Settings | File Templates.
- */
+$(function() {
+    //alert('c');
+    var user = {};
+
+    user.ajax = {
+        get_list: function(s, e, cb){
+            var url = '/brands/save',
+                params = {
+                    s: s,
+                    e: e
+                };
+
+            app.ajax(url, params, function(err, data){
+                err ? cb(err) : cb(null, data);
+            });
+        }
+    };
+
+
+});

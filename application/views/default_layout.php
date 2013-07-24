@@ -49,6 +49,8 @@
     
     <!-- load application -->
     <script src="<?=base_url()?>assets/apps/js/apps.js"></script>
+    <script src="<?=base_url()?>assets/apps/js/apps.users.js"></script>
+
 </head>
 <body>
 
@@ -102,7 +104,7 @@
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-print"></i> รายงาน <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li class="nav-header">Nav header</li>
-                        <li><a href="<?=site_url('reports/e0')?>"><i class="icon-th-list"></i> E0</a></li>
+                        <li><a href="<?=site_url('/reports/e0')?>"><i class="icon-th-list"></i> E0</a></li>
                         <li><a href="#">Another action</a></li>
                         <li><a href="#">Something else here</a></li>
                         <li class="divider"></li>
@@ -114,19 +116,27 @@
             </ul>
 
             <ul class="nav navbar-nav pull-right">
-
+               <?php if($this->session->userdata('status')!='online'){?>
+                <li>
+                <form class="form-inline">
+                    <input type="text" id="txtUsername" placeholder="Username" class="col-lg-3">
+                    <input type="password" id="txtPassword" placeholder="Password" class="col-lg-3" >
+                    <button type="button" id="btnDoLogin" class="btn btn-default link">Sign in</button>
+                </form>
+<?php }else{?>
+                </li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cogs"></i> เมนูส่วนตัว <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li class="nav-header">USER PROFILE</li>
-                        <li><a href="#"><i class="icon-group"></i> ข้อมูลส่วนตัว</a></li>
+                        <li><a href="<?=site_url('/users/user_profile')?>"><i class="icon-group"></i> ข้อมูลส่วนตัว</a></li>
                         <li><a href="#"><i class="icon-key"></i> เปลี่ยนรหัสผ่าน</a></li>
                         <li class="divider"></li>
-                        <li><a href="#"><i class="icon-signout"></i> ออกจากระบบ</a></li>
+                        <li><a href="#" id='btnDoLogout'><i class="icon-signout"></i> ออกจากระบบ</a></li>
                     </ul>
                 </li>
+                    <?php }?>
             </ul>
-
         </div>
     </div>
 </div>

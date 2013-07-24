@@ -1,7 +1,9 @@
 /**
  * Main application script
  */
-
+var base_url = 'http://localhost/epidem/',
+    site_url = 'http://localhost/epidem/index.php/';
+var csrf_token= $.cookie("csrf_cookie_name");
 var app = {
     show_loading: function(){
         $.blockUI({
@@ -81,7 +83,7 @@ var app = {
      */
     ajax: function(url, params, cb){
 
-        params.csrf_token = csrf_token;
+       params.csrf_token = csrf_token;
 
         app.show_loading();
 
