@@ -101,7 +101,7 @@ $(function () {
     };
 
     $('#btn_get_list').on('click', function (e) {
-        patient.btn_get_list();
+        patient.get_import_list();
     });
 
     patient.set_import = function (data) {

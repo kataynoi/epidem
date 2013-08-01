@@ -50,8 +50,6 @@
 
     <!-- load application -->
     <script src="<?=base_url()?>assets/apps/js/apps.js"></script>
-    <script src="<?=base_url()?>assets/apps/js/apps.users.js"></script>
-
 </head>
 <body>
 
@@ -101,20 +99,27 @@
 
                     </ul>
                 </li>
-                <li >
-                    <a href="<?=site_url('/reports/')?>" class=""><i class="glyphicon glyphicon-print"></i> รายงาน </a>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-print"></i> รายงาน <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="nav-header">Nav header</li>
+                        <li><a href="<?=site_url('reports/e0')?>"><i class="glyphicon glyphicon-list"></i> E0</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li class="divider"></li>
+                        <li class="nav-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
                 </li>
             </ul>
 
             <ul class="nav navbar-nav pull-right">
+
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i> เมนูส่วนตัว <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li class="nav-header">USER PROFILE</li>
-                        <li><a href="<?=site_url('/users/user_profile')?>"><i class="icon-group"></i> ข้อมูลส่วนตัว</a></li>
-                        <li><a href="#"><i class="icon-key"></i> เปลี่ยนรหัสผ่าน</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#" id='btnDoLogout'><i class="icon-signout"></i> ออกจากระบบ</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-user"></i> ข้อมูลส่วนตัว</a></li>
                         <li><a href="#"><i class="glyphicon glyphicon-lock"></i> เปลี่ยนรหัสผ่าน</a></li>
                         <li class="divider"></li>
@@ -122,6 +127,7 @@
                     </ul>
                 </li>
             </ul>
+
         </div>
     </div>
 </div>
