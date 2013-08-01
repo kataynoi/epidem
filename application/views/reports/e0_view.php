@@ -1,5 +1,6 @@
 <ul class="breadcrumb">
     <li><a href="<?=site_url()?>">หน้าหลัก </a></li>
+    <li><a href="<?=site_url()."/reports/"?>">รายงาน </a></li>
     <li class="active"> รายงาน E0</li>
 </ul>
 
@@ -18,6 +19,8 @@
     <th>ความทันเวลา</th>
     </thead>
     <tbody>
-
+    <tr>
+        <td colspan="11">...</td>
+    </tr>
     </tbody>
 </table>
