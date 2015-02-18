@@ -1,7 +1,7 @@
 /**
  * Main application script
  */
-
+var sys_id='5';
 var app = {
     show_loading: function () {
         $.blockUI({
@@ -161,7 +161,10 @@ var app = {
     set_cookie: function (k, v) {
         $.cookie(k, v);
     },
-
+    clear_form:function(){
+        $("input[type=text],input[type=password], textarea").val("");
+        $("option:first").attr('selected','selected');
+    },
     get_cookie: function (k) {
         $.cookie(k);
     },
@@ -180,7 +183,7 @@ var app = {
     }
 };
 //Record pre page
-app.record_per_page = 15;
+app.record_per_page = 25;
 
 app.set_runtime = function()
 {
@@ -189,6 +192,7 @@ app.set_runtime = function()
     $('input[data-type="year"]').mask("9999");
     $('input[data-type="number"]').numeric();
     $('input[disabled]').css('background-color', 'white');
+    $('select[disabled]').css('background-color', 'white');
     $('textarea[disabled]').css('background-color', 'white');
 
     $('[data-rel="tooltip"]').tooltip();

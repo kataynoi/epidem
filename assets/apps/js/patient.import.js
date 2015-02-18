@@ -2,11 +2,32 @@ $(function () {
     var patient = {};
 
     patient.ajax = {
-        get_import_list: function (s, e, cb) {
+        get_import_list: function (s, e,off_id, cb) {
             var url = '/patients/get_import_list',
                 params = {
                     s: s,
-                    e: e
+                    e: e,
+                    off_id:off_id
+                }
+
+            app.ajax(url, params, function (err, data) {
+                err ? cb(err) : cb(null, data);
+            });
+        }, get_import_all: function (s, e,off_id, cb) {
+            var url = '/patients/get_import_list',
+                params = {
+                    s: s,
+                    e: e,
+                    off_id:off_id
+                }
+
+            app.ajax(url, params, function (err, data) {
+                err ? cb(err) : cb(null, data);
+            });
+        },get_hserv: function (prov_id,cb) {
+            var url = '/patients/get_hserv',
+                params = {
+                    prov_id: prov_id
                 }
 
             app.ajax(url, params, function (err, data) {
@@ -28,11 +49,12 @@ $(function () {
             });
         },
 
-        get_import_total: function (s, e, cb) {
+        get_import_total: function (s, e,off_id, cb) {
             var url = '/patients/get_import_total',
                 params = {
                     s: s,
-                    e: e
+                    e: e,
+                    off_id:off_id
                 }
 
             app.ajax(url, params, function (err, data) {
@@ -62,10 +84,10 @@ $(function () {
             });
         },
 
-        do_import: function (id, cb) {
+        do_import: function (items, cb) {
             var url = '/patients/do_import',
                 params = {
-                    id: id
+                    items: items
                 }
 
             app.ajax(url, params, function (err, data) {
@@ -82,14 +104,62 @@ $(function () {
 
     patient.get_import_list = function () {
         var s = $('#txt_start_date').val(),
-            e = $('#txt_end_date').val();
+            e = $('#txt_end_date').val(),
+            off_id = $('#txt_off_id').val();
 
         if (!s) {
             app.alert('กรุณาระบุวันที่เริ่มต้น');
         } else if (!e) {
             app.alert('กรุณาระบุวันที่สิ้นสุด');
         } else { 
-            patient.ajax.get_import_list(s, e, function (err, data) {
+            patient.ajax.get_import_list(s, e, off_id,function (err, data) {
+                if (err) {
+                    app.alert(err);
+                }
+                else {
+                    patient.get_import();
+                }
+            });
+        }
+    };
+patient.get_import_all = function () {
+        var s = $('#txt_start_date').val(),
+            e = $('#txt_end_date').val(),
+            off_id=$('#txt_off_id').val(),
+            prov_id='44';
+        if (!s) {
+            app.alert('กรุณาระบุวันที่เริ่มต้น');
+        } else if (!e) {
+            app.alert('กรุณาระบุวันที่สิ้นสุด');
+        } else if(!off_id){
+            patient.ajax.get_hserv(prov_id, function (err, data) {
+                if (err) {
+                    app.alert(err);
+                }
+                else {
+                    //alert('พร้อม Import ทั้งหมด');
+                    $('#tbl_list > tbody').empty();
+                    $('#tbl_list > thead').hide();
+                    var all_import= 0,no=1;
+                    _.each(data.rows, function (v) {
+                        patient.ajax.get_import_list(s, e, v.hospcode, function (err, data) {
+                            if (err) {
+                                app.alert(err);
+                            }
+                            else {
+                                $('#tbl_list > tbody').append(
+                                    '<tr><td>'+no+'</td><td colspan="5">['+ v.hospcode+'] '+ v.title+v.name+'</td><td>' +data.num_rows+' ราย</td></tr>'
+                                );
+                                all_import=(all_import*1)+(data.num_rows*1);
+                                no=no+1;
+                                $('#spn_total').html(app.add_commars_with_out_decimal(all_import));
+                            }
+                        });
+                    });
+                }
+            });
+        } else {
+            patient.ajax.get_import_list(s, e,off_id, function (err, data) {
                 if (err) {
                     app.alert(err);
                 }
@@ -103,19 +173,21 @@ $(function () {
     $('#btn_get_list').on('click', function (e) {
         patient.get_import_list();
     });
+    $('#btn_import_all').on('click', function (e) {
+         patient.get_import_all();
+    });
 
     patient.set_import = function (data) {
 
         $('#tbl_list > tbody').empty();
-
         if (_.size(data.rows) > 0) {
             _.each(data.rows, function (v) {
-                var tr_death = v.ptstatus == '2' ? 'class="danger"' : v.record_status == '1' ? 'class="success"' : '';
+                var tr_death = v.ptstatus == '2' ? 'class="danger"' : '';
                 var chk_import = v.record_status == '1' || v.record_status == '2' ? '<input type="checkbox" disabled>' : '<input type="checkbox" data-name="chk_import" data-id="' + v.id + '">';
                 var ptstatus = v.ptstatus == '1' ? 'หาย' : v.ptstatus == '2' ? 'ตาย' : v.ptstatus == '3' ? 'ยังรักษาอยู่' : v.ptstatus == '9' ? 'ไม่ทราบ' : '-';
                 $('#tbl_list > tbody').append(
                     '<tr ' + tr_death + '>' +
-                        '<td>' + chk_import + '</td>' +
+
                         '<td>' + app.mysql_to_thai_date(v.date_serv) + '</td>' +
                         '<td>' + v.cid + '</td>' +
                         '<td>' + v.name + ' ' + v.lname + '</td>' +
@@ -142,11 +214,12 @@ $(function () {
     patient.get_import = function () {
 
         var s = $('#txt_start_date').val(),
-            e = $('#txt_end_date').val();
+            e = $('#txt_end_date').val(),
+            off_id = $('#txt_off_id').val();
 
         $('#tbl_list > tbody').empty();
 
-        patient.ajax.get_import_total(s, e, function (err, data) {
+        patient.ajax.get_import_total(s, e,off_id, function (err, data) {
             if (err) {
                 app.alert(err);
                 $('#tbl_list > tbody').append('<tr><td colspan="9">ไม่พบรายการ</td></tr>');
@@ -279,16 +352,20 @@ $(function () {
     };
 
     patient.set_tmp_detail = function (v) {
-        $('#txt_tdetail_fullname').val(v.fullname);
+        var fullname = v.name + ' ' + v.lname;
+        var age = v.age.year + ' ปี ' + v.age.month + ' เดือน ' + v.age.day + ' วัน';
+        var ptstatus = v.ptstatus == '1' ? 'หาย' : v.ptstatus == '2' ? 'ตาย' : v.ptstatus == '3' ? 'ยังรักษาอยู่' : v.ptstatus == '9' ? 'ไม่ทราบ' : '-';
+
+        $('#txt_tdetail_fullname').val(fullname);
         $('#txt_tdetail_cid').val(v.cid);
         $('#txt_tdetail_birth').val(v.birth);
-        $('#txt_tdetail_age').val(v.age);
+        $('#txt_tdetail_age').val(age);
         $('#txt_tdetail_date_serv').val(v.date_serv);
         $('#txt_tdetail_illdate').val(v.illdate);
-        $('#txt_tdetail_ptstatus').val(v.ptstatus);
+        $('#txt_tdetail_ptstatus').val(ptstatus);
         $('#txt_tdetail_date_death').val(v.date_death);
         $('#txt_tdetail_code506').val(v.code506);
-        $('#txt_tdetail_code506_nme').val(v.code506_name);
+        $('#txt_tdetail_code506_name').val(v.code506_name);
         $('#txt_tdetail_diagcode').val(v.diagcode);
         $('#txt_tdetail_diagname').val(v.diagname);
     };

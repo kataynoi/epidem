@@ -49,6 +49,49 @@ class Basic_model extends CI_Model
 
         return $rs;
     }
+public function get_district_list($provid)
+    {
+
+        $rs = $this->db
+            ->where('provid',$provid)
+            ->get('co_district')
+            ->result();
+
+        return $rs;
+    }
+public function get_subdistrict_list($amp)
+    {
+
+        $rs = $this->db
+            ->where('distid',$amp)
+            ->get('co_subdistrict')
+            ->result();
+
+        return $rs;
+    }
+public function get_village_list($tmb)
+    {
+
+        $rs = $this->db
+            ->where('subdistid',$tmb)
+            ->get('co_village')
+            ->result();
+
+        return $rs;
+    }
+public function get_village_base($hospcode)
+    {
+
+        $rs = $this->db
+            ->select('a.*,b.subdistname,c.distname')
+            ->where('a.hospcode',$hospcode)
+            ->join('co_subdistrict b ' ,'a.subdistid = b.subdistid')
+            ->join('co_district c ' ,'a.distid = c.distid')
+            ->get('co_village a')
+            ->result();
+
+        return $rs;
+    }
 
     public function get_moo_list($chw, $amp, $tmb)
     {
@@ -110,6 +153,15 @@ class Basic_model extends CI_Model
         $rs = $this->db->get('ref_code506')->result();
         return $rs;
     }
+    public function get_hserv_list($pro_code)
+    {
+        $rs = $this->db
+            ->where('provid',$pro_code)
+            ->order_by('distid,off_id')
+            ->get('co_office')
+            ->result();
+        return $rs;
+    }
 
     public function get_complication_list()
     {
@@ -144,7 +196,7 @@ class Basic_model extends CI_Model
     {
         $rs = $this->db
             ->order_by('code')
-            ->get('ref_occupation')
+            ->get('ref_nhso_occupation')
             ->result();
 
         return $rs;
@@ -154,12 +206,12 @@ class Basic_model extends CI_Model
     {
         $rs = $this->db
             ->order_by('code')
-            ->get('ref_nation')
+            ->get('ref_nhso_nation')
             ->result();
 
         return $rs;
     }
-    
+
     public function get_hospital_type_list() 
     {
         $rs = $this->db
@@ -180,6 +232,34 @@ class Basic_model extends CI_Model
 
         return count($rs) > 0 ? $rs->desc_r : '-';
     }
+    public function get_office($code)
+    {
+        $rs = $this->db
+            ->where('off_id', $code)
+            ->get('co_office')
+            ->row();
+        return $rs;
+    }
+    public function get_code506name($code)
+    {
+        $rs = $this->db
+            ->select(array('name'))
+            ->where(array('code' => $code))
+            ->get('ref_code506')
+            ->row();
+
+        return count($rs) > 0 ? $rs->name : '-';
+    }
+    public function get_hospname($code)
+    {
+        $rs = $this->db
+            ->select(array('off_name'))
+            ->where(array('off_id' => $code))
+            ->get('co_office')
+            ->row();
+
+        return count($rs) > 0 ? $rs->off_name : '-';
+    }
 
     public function get_506_nation($nhso_code)
     {
@@ -199,6 +279,98 @@ class Basic_model extends CI_Model
             ->row();
 
         return count($rs) > 0 ? $rs->code : '9999';
+    }
+    public function get_sex($sex){
+        switch ($sex) {
+            case 1:
+                $r = "ชาย";
+                break;
+            case 2:
+                $r = "หญิง";
+                break;
+            default:
+                $rs = "ไม่ทราบ";
+                break;
+        }
+        return $r;
+    }
+    public function get_mstatus($m){
+        $rs = $this->db
+            ->where(array('mstatus_code' => $m))
+            ->get('ref_mstatus')
+            ->row();
+
+        return count($rs) > 0 ? $rs->mstatus_desc : '-';
+    }
+    public function get_nation($m){
+        $rs = $this->db
+            ->where(array('code' => $m))
+            ->get('ref_nhso_nation')
+            ->row();
+
+        return count($rs) > 0 ? $rs->name : '-';
+    }
+ public function get_occupation($m){
+        $rs = $this->db
+            ->where(array('code' => $m))
+            ->get('ref_nhso_occupation')
+            ->row();
+        return count($rs) > 0 ? $rs->name : '-';
+    }
+    public function encode($txt){
+        $en=base64_encode(md5(md5($txt).'84c9aef34f7bc237'));
+        return $en;
+    }
+
+    public function get_office_list_by_amp($amp)
+    {
+        $rs = $this->db
+            ->where('amphur',$amp)
+            ->get('co_office')
+            ->result();
+
+        return $rs;
+    }
+    public function get_what_new()
+    {
+        $rs = $this->db
+            ->limit(25)
+            ->order_by('create_date','DESC')
+            ->get('what_new')
+            ->result();
+
+        return $rs;
+    }
+    public function get_amp_code($id){
+        $rs = $this->db
+            ->select('amphur')
+            ->where('off_id',$id)
+            ->get('co_office')
+            ->row();
+        return $rs->amphur;
+    }
+    public function get_hserv($id){
+        $rs = $this->db
+            ->select('hserv')
+            ->where('off_id',$id)
+            ->get('co_office')
+            ->row();
+        return $rs->hserv;
+    } public function get_provid($id){
+        $rs = $this->db
+            ->select('changwat')
+            ->where('off_id',$id)
+            ->get('co_office')
+            ->row();
+        return $rs->changwat;
+    }
+    public function get_off_name($id){
+        $rs = $this->db
+            ->select('off_name')
+            ->where('off_id',$id)
+            ->get('co_office')
+            ->row();
+        return count($rs) > 0 ? $rs->off_name : '-';
     }
 }
 
